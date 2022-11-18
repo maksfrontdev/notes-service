@@ -1,0 +1,49 @@
+{
+  "name": "notes-service",
+  "version": "0.1.0",
+  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "build": "run-p -l api:build",
+    "api:start": "cd packages/api && yarn start",
+    "api:start:dev": "cd packages/api && yarn start:dev",
+    "api:start:docker-compose": "cd packages/api && yarn start:docker-compose",
+    "api:build": "cd packages/api && yarn build",
+    "api:test": "cd packages/api && yarn test",
+    "lint": "run-p lint:js lint:types",
+    "lint:js": "eslint --ext .ts --ext .tsx packages",
+    "lint:types": "run-p lint:types:api",
+    "lint:types:api": "tsc --incremental -p packages/api",
+    "lint:last-commit": "commitlint -f HEAD~1",
+    "prettier": "prettier --write 'packages/**/*.{ts,tsx}'",
+    "test": "run-p api:test"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.25.0",
+    "@typescript-eslint/parser": "^5.25.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.15.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.6.2",
+    "typescript": "^4.6.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}

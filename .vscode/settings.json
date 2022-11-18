@@ -1,0 +1,8 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "jestrunner.jestCommand": "TZ=GTM yarn test --runInBand",
+  "jestrunner.projectPath": "packages/api",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

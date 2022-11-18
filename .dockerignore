@@ -1,0 +1,9 @@
+node_modules
+build
+coverage
+dist
+.git
+data
+packages/api/.env
+packages/api/docker.env
+packages/api/Dockerfile

@@ -1,0 +1,26 @@
+version: '2'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile
+    env_file: packages/api/docker.env
+    ports:
+      - 4000:4000
+    image: notes/notes-api
+
+  mongo:
+    image: mongo:6.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: notesservice
+      MONGO_INITDB_ROOT_PASSWORD: notesservice
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo:/data/db
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - mongo
+    command: mongo:27017

@@ -1,0 +1,28 @@
+{
+  "jsc": {
+    "target": "es2021",
+    "parser": {
+      "syntax": "typescript",
+      "decorators": true
+    },
+    "transform": {
+      "legacyDecorator": true,
+      "decoratorMetadata": true
+    },
+    "baseUrl": "./src",
+    "paths": {
+      "@config": ["config"],
+      "@database/*": ["database/*"],
+      "@jobs/*": ["jobs/*"],
+      "@modules/*": ["modules/*"],
+      "@services/*": ["services/*"]
+    }
+  },
+  "module": {
+    "type": "commonjs",
+    "strict": false,
+    "strictMode": true,
+    "lazy": false,
+    "noInterop": false
+  }
+}

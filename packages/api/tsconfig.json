@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@config": ["config"],
+      "@database/*": ["database/*"],
+      "@jobs/*": ["jobs/*"],
+      "@modules/*": ["modules/*"],
+      "@services/*": ["services/*"]
+    },
+    "experimentalDecorators": true
+  }
+}

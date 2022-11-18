@@ -1,0 +1,53 @@
+name: Release Production
+on:
+  release:
+    types: [published]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  GKE_CLUSTER: notes-service
+  GKE_ZONE: us-central1-a
+
+jobs:
+  build-and-release-api:
+    name: Build and release API
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure GCP auth
+        uses: google-github-actions/auth@v0
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up GCloud
+        uses: 'google-github-actions/setup-gcloud@v0'
+        with:
+          version: '406.0.0'
+
+      - name: Configure docker
+        run: |-
+          gcloud --quiet auth configure-docker us-docker.pkg.dev
+
+      - name: Build image
+        run: |-
+          docker build -f packages/api/Dockerfile -t "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA" .
+      - name: Publish image
+        run: |-
+          docker tag "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA" "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA-production"
+          docker tag "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA" "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:production"
+          docker push "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA-production"
+          docker push "us-docker.pkg.dev/$PROJECT_ID/notes-service/api:production"
+
+      - name: Release API
+        run: |-
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+          curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl  > /dev/null
+          chmod u+x ./kubectl
+          ./kubectl apply -f .k8s/production
+          ./kubectl set image deployment/notes-service-api-server notes-service-api-server=us-docker.pkg.dev/$PROJECT_ID/notes-service/api:$GITHUB_SHA-production -n production
+          ./kubectl rollout restart deployment/notes-service-api-server -n production
